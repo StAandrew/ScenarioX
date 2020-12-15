@@ -15,7 +15,7 @@ end
 %10s input like in template
 tic
 while toc<10
-%one frame input test
+%one frame input
 InputSignal = deviceReader();
 
 %flipping the signal
