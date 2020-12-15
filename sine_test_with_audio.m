@@ -1,4 +1,5 @@
 deviceReader = audioDeviceReader;
+deviceWriter = audioDeviceWriter('SampleRate',deviceReader.SampleRate);
 
 number_of_samples = 1024;
 fs = 44100;
@@ -20,6 +21,10 @@ InputSignal = deviceReader();
 
 %flipping the signal
 OutputSignal = InputSignal.*array';
+%amplifying output
+OutputSignal = OutputSignal*1.5;
+
+deviceWriter(OutputSignal);
 end
 
 %input signal in frequency domain
