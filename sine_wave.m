@@ -8,9 +8,11 @@ y = sin(2*pi*7000*t);
 %adding 2 arrays 1 after each other to test if it matches actual sine
 samples = [y y]
 time = [t (10/7000)+t]
-plot(time,samples)
+plot(time,samples,'-o')
 hold on
 
-t = 0:1/44100:2*number_of_periods/7000
+%actual sine
+syms t
 y = sin(2*pi*7000*t)
-plot(t,y)
+fplot(y)
+xlim([0 2*number_of_periods/7000])
