@@ -18,19 +18,18 @@ deviceWriter = audioDeviceWriter('SampleRate',deviceReader.SampleRate);
 %   frame as an argument.
 
 [b,a] = cheby2(5,60,[7950/22050 8050/22050],'stop');
-[hn,t] = impz(b,a,1024,44100);
+[hn,t] = impz(b,a,577,44100);
 
 [d,c] = cheby2(15,50,8000/22050,'low');
-[hlp,t] = impz(c,d,1024,44100);
+[hlp,t] = impz(c,d,250,44100);
 
 %sine array for 1024 samples
 t = 0:1/44100:10/7000;
 array = sin(2*pi*7000*t);
-for n =1:5
-    array = [array array];
-end
+array = repmat(array,1,25);
 
-buffer = zeros(1024,1);
+
+buffer = zeros(825,1);
 
 disp('Begin Signal Input...')
 tic
@@ -47,16 +46,14 @@ while toc<10 %This loop runs for 10 seconds.
     % and some processes such as filtering will produce extra samples which 
     % need to be added to the following frame.
     AmpSignal = InputSignal * 1.5;
-    TotalSignal = buffer + AmpSignal;
-    NotchSignal = conv(hn,TotalSignal);
+    NotchSignal = conv(hn,AmpSignal);
     %flipping the signal
-%     FlippedSignal = NotchSignal.*array';
+    FlippedSignal = NotchSignal.*array';
     
-%     LPSignal = conv(hlp,FlippedSignal);
-    
-    buffer = NotchSignal(1025:end,:);
-    buffer(1024) = 0;
-    OutputSignal = NotchSignal(1:1024,:);
+    LPSignal = conv(hlp,FlippedSignal);
+    LPSignal(1:825) = LPSignal(1:825) + buffer;
+    buffer = LPSignal(1025:end,:);
+    OutputSignal = LPSignal(1:1024,:);
 %   OutputSignal = AmpSignal;
     % This line sends the processed frame to the output audio device, i.e., 
     % your speakers.
